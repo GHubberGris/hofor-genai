@@ -1,0 +1,54 @@
+[project]
+name = "boardgame-ruler"
+version = "0.1.0"
+description = "A small RAG chatbot that answers board game rules questions."
+readme = "README.md"
+requires-python = ">=3.12"
+
+# Keep runtime deps empty for now; add later with: uv add fastapi
+dependencies = [
+    "beautifulsoup4>=4.14.3",
+    "dotenv>=0.9.9",
+    "langchain>=1.2.3",
+    "langchain-community>=0.4.1",
+    "langchain-openai>=1.1.7",
+    "langchain-qdrant>=1.1.0",
+    "langchain-unstructured>=1.0.1",
+    "pypdf>=6.6.0",
+    "qdrant-client>=1.16.2",
+    "requests>=2.32.5",
+    "types-requests>=2.32.4.20260107",
+]
+
+[dependency-groups]
+# Dev-only tooling (PEP 735 / supported by uv)
+dev = [
+  "mypy>=1.19.1",
+  "pre-commit>=3.7",
+  "pytest>=8.0",
+  "ruff>=0.12",
+]
+
+[tool.uv]
+# Enforce a minimum uv version for contributors.
+required-version = ">=0.5.0"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# E/F/I: basic linting + import sorting
+# UP: pyupgrade
+# B: bugbear
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_configs = true
+check_untyped_defs = true
+ignore_missing_imports = true
