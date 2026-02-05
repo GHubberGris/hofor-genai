@@ -1,4 +1,4 @@
-# Board Game Ruler
+# Hofor kravsspecifikationer
 
 This repo uses **uv** for dependency management and a small set of opinionated tooling:
 - ruff (lint + format)
