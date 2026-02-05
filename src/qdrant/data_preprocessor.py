@@ -1,16 +1,19 @@
+import os
 from pathlib import Path
 
 # from langchain_community.document_loaders import PyPDFLoader
+from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pdf_loader import load_pdfs
 
-QDRANT_URL = "http://localhost:6333"
-COLLECTION = "boardgame_rules_v0"
-PDF_DIR = Path("data/rules")
-# COLLECTION = "hofor_kravspec"
-# PDF_DIR = Path("pdf_downloads")
+#QDRANT_URL = "http://localhost:6333"
+#COLLECTION = "boardgame_rules_v0"
+#PDF_DIR = Path("data/rules")
+COLLECTION = "hofor_kravspec"
+PDF_DIR = Path("pdf_downloads")
+
 
 """
 def load_pdfs(pdf_dir: Path):
@@ -34,6 +37,9 @@ def main():
     3) Define embedding model
     4) Upload embeddings to Qdrant
     """
+    env_path = Path(__file__).parent.parent.parent / ".env"
+    load_dotenv(dotenv_path=env_path)
+
     docs = load_pdfs(PDF_DIR)
     if not docs:
         raise SystemExit(f"No PDFs found in {PDF_DIR.resolve()}")
@@ -41,14 +47,23 @@ def main():
     splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=100)
     chunks = splitter.split_documents(docs)
 
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+    openai_kwargs = {"api_key": os.getenv("OPENAI_API_KEY")} if os.getenv("OPENAI_API_KEY") else {}
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-small", **openai_kwargs)
 
+    #QdrantVectorStore.from_documents(
+        #documents=chunks,
+        #embedding=embeddings,
+        #url=QDRANT_URL,
+        #collection_name=COLLECTION,
+    #)
     QdrantVectorStore.from_documents(
         documents=chunks,
         embedding=embeddings,
-        url=QDRANT_URL,
+        url=os.getenv("QDRANT_URL"),
+        api_key=os.getenv("QDRANT_API_KEY"),
         collection_name=COLLECTION,
-    )
+)
+
 
     print(f"Ingested {len(chunks)} chunks into Qdrant collection '{COLLECTION}'")
 

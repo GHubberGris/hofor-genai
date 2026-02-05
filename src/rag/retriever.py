@@ -12,7 +12,8 @@ from rag.utils import RetrievedChunk, format_context
 
 def main() -> None:
     # 1) Same embedding model used at ingestion time
-    embeddings = OpenAIEmbeddings(model=settings.EMBED_MODEL)
+    openai_kwargs = {"api_key": settings.OPENAI_API_KEY} if settings.OPENAI_API_KEY else {}
+    embeddings = OpenAIEmbeddings(model=settings.EMBED_MODEL, **openai_kwargs)
 
     # 2) Connect to existing Qdrant collection
     vectorstore = QdrantVectorStore.from_existing_collection(
@@ -28,7 +29,7 @@ def main() -> None:
     )
 
     # 4) Chat model for answer generation
-    llm = ChatOpenAI(model=settings.CHAT_MODEL, temperature=0)
+    llm = ChatOpenAI(model=settings.CHAT_MODEL, temperature=0, **openai_kwargs)
 
     history: list[dict[Any, Any]] = []
     print(f"Connected to Qdrant collection: {settings.COLLECTION}")
